@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=320, height=640, initial-scale=1.0, user-scalable=no">
+<title>Focus Recorder</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: system-ui, sans-serif;
+}
+
+/* HARD DEVICE SIZE */
+html, body{
+  width:320px;
+  height:640px;
+  overflow:hidden;
+  background:#c96b6b;
+}
+
+/* CENTER CARD */
+.wrapper{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:fixed;
+  inset:0;
+}
+
+/* RECORDER CARD */
+.card{
+  width:260px;
+  background:#bfc9c7;
+  padding:14px;
+  border-radius:12px;
+  box-shadow:0 6px 0 #7b8a87;
+}
+
+/* TOP DISPLAY */
+.display{
+  background:#fff;
+  border-radius:10px;
+  padding:14px;
+  text-align:center;
+  margin-bottom:14px;
+}
+
+.label{
+  font-size:11px;
+  letter-spacing:1px;
+  margin-bottom:6px;
+}
+
+.time{
+  font-size:36px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+/* START RESET */
+.top-buttons{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+}
+
+.top-buttons button{
+  padding:4px 10px;
+  font-size:12px;
+  border-radius:6px;
+  border:1px solid #444;
+  background:#fff;
+  cursor:pointer;
+}
+
+/* BOTTOM CONTROLS */
+.bottom{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.control{
+  width:48%;
+  background:#374151;
+  border-radius:8px;
+  padding:8px;
+  text-align:center;
+  color:#e5e7eb;
+}
+
+.control p{
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+.control button{
+  width:100%;
+  padding:6px;
+  border-radius:6px;
+  border:none;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* STATUS */
+.status{
+  margin-top:10px;
+  font-size:12px;
+  text-align:center;
+  color:#1f2937;
+}
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+  <div class="card">
+
+    <div class="display">
+      <div class="label">SESSION</div>
+      <div class="time" id="time">00:00:00</div>
+      <div class="top-buttons">
+        <button onclick="start()">Start</button>
+        <button onclick="reset()">Reset</button>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <div class="control">
+        <button onclick="pause()">Pause</button>
+      </div>
+
+      <div class="control">
+        <button onclick="end()">End</button>
+      </div>
+    </div>
+
+    <div class="status" id="status">Ready</div>
+
+  </div>
+</div>
+
+<script>
+let seconds = 0;
+let interval = null;
+let running = false;
+
+const timeEl = document.getElementById("time");
+const statusEl = document.getElementById("status");
+
+function format(s){
+  const h = String(Math.floor(s/3600)).padStart(2,"0");
+  const m = String(Math.floor((s%3600)/60)).padStart(2,"0");
+  const sec = String(s%60).padStart(2,"0");
+  return `${h}:${m}:${sec}`;
+}
+
+function start(){
+  if(running) return;
+  running = true;
+  statusEl.textContent = "Focused";
+  interval = setInterval(()=>{
+    seconds++;
+    timeEl.textContent = format(seconds);
+  },1000);
+}
+
+function pause(){
+  if(!running) return;
+  clearInterval(interval);
+  running = false;
+  statusEl.textContent = "Keep going";
+}
+
+function end(){
+  clearInterval(interval);
+  running = false;
+  statusEl.textContent = `Ended • ${format(seconds)}`;
+}
+
+function reset(){
+  clearInterval(interval);
+  running = false;
+  seconds = 0;
+  timeEl.textContent = "00:00:00";
+  statusEl.textContent = "Ready";
+}
+</script>
+</body>
+</html>
